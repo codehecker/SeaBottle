@@ -1,6 +1,12 @@
 ﻿
 var currentUserKey = '';
 var chatKey = '';
+
+document.addEventListener('keydown', function(key) {
+        if (key.which === 13) {
+            SendMessage();
+        }
+    });
 /////////////////////////////////////////
 function startChat(friendKey, friendName, friendPhoto) {
     var friendList = { friendId: friendKey, userId: currentUserKey };
@@ -55,7 +61,7 @@ function startChat(friendKey, friendName, friendPhoto) {
         ////////////////////////////////////////////
         //Display the chat messages
         LoadChatMessages(chatKey, friendPhoto);
-        OnKeyDown();
+        
         document.getElementById('textMessage').value = '';
         document.getElementById('textMessage').focus();
 
@@ -120,13 +126,7 @@ function hideChatList() {
 
 ////////////////////////////////////////////////////////
 
-function OnKeyDown() {
-    document.addEventListener('keydown', function(key) {
-        if (key.which === 13) {
-            SendMessage();
-        }
-    });
-}
+
 
 
 
