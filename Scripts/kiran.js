@@ -1,16 +1,11 @@
 ﻿
 var currentUserKey = '';
 var chatKey = '';
-
-document.addEventListener('keydown', function(key) {
-        if (key.which === 13) {
-            SendMessage();
-        }
-    });
+var friend_Id = '';
 /////////////////////////////////////////
 function startChat(friendKey, friendName, friendPhoto) {
     var friendList = { friendId: friendKey, userId: currentUserKey };
-
+    friend_id = friendKey;
     var db = firebase.database().ref('friend_List');
     var flag = false;
     db.on('value', function (friends) {
@@ -61,9 +56,9 @@ function startChat(friendKey, friendName, friendPhoto) {
         ////////////////////////////////////////////
         //Display the chat messages
         LoadChatMessages(chatKey, friendPhoto);
-        
-        document.getElementById('textMessage').value = '';
-        document.getElementById('textMessage').focus();
+      
+        document.getElementById('txtMessage').value = '';
+        document.getElementById('txtMessage').focus();
 
     });
 
@@ -76,8 +71,15 @@ function LoadChatMessages(chatKey,friendPhoto){
         var messageDisplay = '';
         chats.forEach(function(data) {
             var chat = data.val();
-            var dateTime = chat.dateTime.split(",");
            
+            var dateTime = chat.dateTime.split(",");
+            var msg = '';
+            if (chat.msg.indexOf('base64')!= -1) {
+                msg = `<img src='${chat.msg}' class="img-fluid" />`;
+            }
+            else {
+                msg = chat.msg;
+            }
             if (chat.userId !== currentUserKey) {
                 messageDisplay += ` <div class="row">
                             <div class="col-2 col-sm-1 col-md-1">
@@ -85,7 +87,7 @@ function LoadChatMessages(chatKey,friendPhoto){
                             </div>
                             <div class="col-6 col-sm-7 col-md-7">
                                 <p class="receive">
-                                    ${chat.msg}
+                                    ${msg}
                                     <span class="time float-right" title="${dateTime[0]}">${dateTime[1]}</span>
                                 </p>
                             </div>
@@ -95,7 +97,7 @@ function LoadChatMessages(chatKey,friendPhoto){
                  messageDisplay += `<div class="row justify-content-end" >
                 <div class="col-6 col-sm-7 col-md-7 ">
                     <p class="sent float-right">
-                        ${chat.msg}
+                        ${msg}
                         <span class="time float-right" title="${dateTime[0]}">${dateTime[1]} </span >
                     </p>
                 </div>
@@ -107,8 +109,8 @@ function LoadChatMessages(chatKey,friendPhoto){
             
         });
         document.getElementById('messages').innerHTML = messageDisplay;
-        document.getElementById('textMessage').value = '';
-        document.getElementById('textMessage').focus();
+        document.getElementById('txtMessage').value = '';
+        document.getElementById('txtMessage').focus();
         document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight);
 
     });
@@ -127,6 +129,12 @@ function hideChatList() {
 ////////////////////////////////////////////////////////
 
 
+    document.addEventListener('keydown', function(key) {
+        if (key.which === 13) {
+            SendMessage();
+        }
+    });
+
 
 
 
@@ -135,7 +143,7 @@ function hideChatList() {
 function SendMessage() {
     var chatMessage = {
         userId: currentUserKey,
-        msg: document.getElementById('textMessage').value,
+        msg: document.getElementById('txtMessage').value,
        
         dateTime: new Date().toLocaleString()
     };
@@ -145,7 +153,7 @@ function SendMessage() {
             //var message = `<div class="row justify-content-end">
             //                <div class="col-6 col-sm-7 col-md-7 ">
             //                    <p class="sent float-right">
-            //                        ${document.getElementById('textMessage').value}
+            //                        ${document.getElementById('txtMessage').value}
             //                        <span class="time float-right"> 1:28 pm</span>
             //                    </p>
             //                </div>
@@ -154,8 +162,8 @@ function SendMessage() {
             //                </div>
             //            </div>`;
             // document.getElementById('messages').innerHTML = message;
-           // document.getElementById('textMessage').value = '';
-           // document.getElementById('textMessage').focus();
+            document.getElementById('txtMessage').value = '';
+            document.getElementById('txtMessage').focus();
             // document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight);
 
         }
@@ -163,8 +171,91 @@ function SendMessage() {
     });
     
 }
+////////////////////////////////////////
+//Emoji
+showAllEmoji();
+function showAllEmoji() {
+
+    var emoji = '';
+    for (var i = 128512; i <= 128540; i++) {
+        emoji += `<a href="#" onclick="getEmoji(this)" >&#${i};</a>`;
+    }
+    document.getElementById('smiley').innerHTML = emoji;
+
+}
+function showEmojiPanel() {
+    document.getElementById('emoji').removeAttribute('style');
+    
+}
+function hideEmojiPanel() {
+    document.getElementById('emoji').setAttribute('style','display:none');
+}
+function getEmoji(control) {
+    document.getElementById('txtMessage').value += control.innerHTML;
+
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////
+
+//choose Img
+
+function chooseImg() {
+    document.getElementById('imgFile').click();
+}
+
+function SendImage(event) {
+    var file = event.files[0];
+
+    if (!file.type.match("image.*")) {
+        alert("Please select image only.");
+    }
+    else {
+        var reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+            var chatMessage = {
+                userId: currentUserKey,
+                msg: reader.result,
+                msgType: 'image',
+                dateTime: new Date().toLocaleString()
+            };
+
+            firebase.database().ref('chatMessages').child(chatKey).push(chatMessage, function (error) {
+                if (error) alert(error);
+                else {
+
+                    document.getElementById('txtMessage').value = '';
+                    document.getElementById('txtMessage').focus();
+                }
+            });
+        }, false);
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////
+function changeSendIcon(control) {
+    if (control.value !== '') {
+        document.getElementById('send').removeAttribute('style');
+
+        document.getElementById('audio').setAttribute('style', 'display:none');
+    }
+    else {
+        document.getElementById('audio').removeAttribute('style');
+
+        document.getElementById('send').setAttribute('style','display:none');
+    }
+}
+
+
+
+
+
+//////////////////
 
 function LoadChatList() {
     var db = firebase.database().ref('friend_list');
@@ -185,17 +276,17 @@ function LoadChatList() {
             if (friendKey !== "") {
                 firebase.database().ref('users').child(friendKey).on('value', function (data) {
                     var user = data.val();
-                    document.getElementById('lstChat').innerHTML += `<li class="list-group-item list-group-item-action" onclick="StartChat('${data.key}', '${user.name}', '${user.photoURL}')">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <img src="${user.photoURL}" class="friend-pic rounded-circle" />
-                                </div>
-                                <div class="col-md-10" style="cursor:pointer;">
-                                    <div class="name">${user.name}</div>
-                                    <div class="under-name">This is some message text...</div>
-                                </div>
-                            </div>
-                        </li>`;
+                    document.getElementById('lstChat').innerHTML +=`<li class="list-group-item list-group-item-action" onclick="startChat('${data.key}','${user.name}','${user.photoURL}')">
+                                                                            <div class="row">
+                                                                                <div class="col-md-2">
+                                                                                    <img src="${user.photoURL}" class="friend-pic rounded-circle" />
+                                                                                </div>
+                                                                                <div class="col-md-10" style="cursor:pointer;">
+                                                                                    <div class="name">${user.name}</div>
+                                                                                    <div class="under-name">This is some message text...</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>`;
                 });
             }
         });

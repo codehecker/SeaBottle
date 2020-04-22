@@ -53,7 +53,11 @@
                             </div>
                         </div>
                     </div>
-                    <ul class="list-group list-group-flush" id="lstChat">   </ul>
+                    <div class="cardbody">
+                        
+                            <ul class="list-group list-group-flush" id="lstChat">   </ul>
+                        
+                    </div>
                 </div>
             </div>
             <div class="col-md-8 pl-0 " id="side-2" style="background-image: url('images/sea.jpg'); background-size:cover;padding:0;">
@@ -72,30 +76,68 @@
                                 <div class="name" id="divChatName">Any Name</div>
                                 <div class="under-name" id="divChatSeen">Last seen 9/8/2019</div>
                             </div>
-                            <div class="col-4 col-sm-4 col-md-4 col-lg-3 icon float-right">
+                            <div class="col-2 col-sm- col-md-2 col-lg-1 icon float-right">
                                 <i class="fas fa-search"></i>
-                                <i class="fas fa-paperclip ml-4"></i>
-                                <i class="fas fa-ellipsis-v ml-4"></i>
+                            </div>
+                            <div class="col-2 col-sm-2 col-md-2 col-lg-2 icon float-right">
+                                <div class="dropdown">
+                                    <span class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fas fa-paperclip ml-4"></i>
+                                    </span>
+                                    <div class="dropdown-menu">
+                                        <a href="#" class="dropdown-item" onclick="chooseImg()">Image
+                                        <input type="file" id="imgFile" accept="image/*" onchange="SendImage(this)" style="display:none"/></a>
+                                        <a href="#" class="dropdown-item">camera</a>
+                                        <a href="#" class="dropdown-item">video</a>
+                                        <a href="#" class="dropdown-item">document</a>
+                                    </div>
+
+                                    <i class="fas fa-ellipsis-v ml-4"></i>
+                                </div>
+                            </div>
                             </div>
                         </div>
-                    </div>
                     <div class="card-body" id="messages">
                        
 
                     </div>
 
                     <div class="card-footer">
+                        <div class="row" style="position:relative;">
+                            <div class="col-md-12" id="emoji" style="display:none">
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#smiley" role="tab" aria-controls="home" aria-selected="true">Smiley</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="smiley" role="tabpanel" aria-labelledby="home-tab">
+                                        
+                                        
+                                    </div>
+                                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+                                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+                                </div>
+                            </div>
 
+                        </div>
                         <div class="row ">
                             <div class="col-1 col-sm-1 col-md-1">
-                                <i class="far fa-grin fa-2x"></i>
+                                <i class="far fa-grin fa-2x" style="cursor:pointer;" onclick="showEmojiPanel()"></i>
                             </div>
                             <div class="col-10 col-sm-10 col-md-10">
-                                <input id="textMessage"  type="text" placeholder="Type Here" class="form-control form-rounded" />
+                                <input id="txtMessage" onkeyup="changeSendIcon(this)" type="text" onfocus="hideEmojiPanel()" placeholder="Type Here" class="form-control form-rounded" />
 
                             </div>
                             <div class="col-1 col-sm-1 col-md-1">
-                                <i class="fas fa-microphone fa-2x"></i>
+                                <i id="audio"class="fas fa-microphone fa-2x"></i>
+                                <i id="send" class="fas fa-paper-plane fa-2x" style="display:none"></i>
                             </div>
                         </div>
 
